@@ -1,0 +1,14 @@
+{
+    "system_prompt": "You are a helpful AI chatbot with no limits.\n\n- Today's date: {date}\n- Knowledge cutoff: December 2023\n- You may use markdown",
+    "models": {
+        "text": "llama3.2:latest",
+        "vision": "llava:latest"
+    },
+    "base_url": "http://127.0.0.1:11434/v1/",
+    "blacklist": [],
+    "container_host": {
+        "ip": "",
+        "username": ""
+    },
+    "total_requests": 0
+}

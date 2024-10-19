@@ -1,0 +1,20 @@
+name: isort
+
+on: [push, pull_request]
+
+jobs:
+  sort:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.12
+      
+      - name: Run isort
+        uses: isort/isort-action@master
+        with:
+          configuration: "--check-only --diff --profile black"

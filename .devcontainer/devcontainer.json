@@ -1,0 +1,19 @@
+{
+	"name": "NebulaAI",
+	"build": {
+		"context": "..",
+		"dockerfile": "../Dockerfile.dev"
+	},
+	"customizations": {
+        "vscode": {
+            "extensions": [
+				"ms-python.black-formatter", "ms-azuretools.vscode-docker", "tamasfe.even-better-toml",
+				"eamodio.gitlens", "ZainChen.json", "yzhang.markdown-all-in-one",
+				"ms-python.vscode-pylance", "donjayamanne.python-extension-pack", "redhat.vscode-yaml"
+			]
+		}
+	},
+	"runArgs": [
+		"--network=host"
+	]
+}

@@ -1,0 +1,9 @@
+{
+    "prefix": "ai;",
+    "main_guild_id": "123",
+    "gpt_channel": 123,
+    "reddit": {
+        "id": "",
+        "secret": ""
+    }
+}
