@@ -170,7 +170,7 @@ class AI(commands.Cog, name="ai"):
             ),
             YouTubePlugin(self.session, self.whisper_model),
             ImageGenPlugin(self.session, self.client, self.ai_config),
-            ShellPlugin(self.session, self.client, self.ai_config),
+            # ShellPlugin(self.session, self.client, self.ai_config),
             WebPlugin(self.session_proxied, self.client, self.ai_config, self.proxies),
         ]
 
@@ -200,8 +200,8 @@ class AI(commands.Cog, name="ai"):
         self.ai_config["total_requests"] = self.ai_config["total_requests"] + 1
         AIConfigJSON().write_json(self.ai_config)
 
-    async def handle_gpt(self, message: discord.Message):
-        content = message.content.lstrip(";")
+    async def handle_gpt(self, message: discord.Message, content: str = None):
+        content = message.content.lstrip(";") if content is None else content
         loading_emoji = "<a:loading:1292980861142040606>"
         await message.add_reaction(loading_emoji)
 
@@ -418,7 +418,9 @@ class AI(commands.Cog, name="ai"):
 
                     if message.channel.id == self.config["gpt_channel"]:
                         async with message.channel.typing():
-                            _, msgs, tps = await self.handle_gpt(message)
+                            _, msgs, tps = await self.handle_gpt(
+                                message, content=result["text"]
+                            )
 
                             embed.add_field(
                                 name="AI Statistics", value=tps, inline=False
@@ -437,8 +439,7 @@ class AI(commands.Cog, name="ai"):
         ] or not message.content.startswith(";"):
             return
 
-        async with message.channel.typing():
-            await self.handle_gpt(message)
+        await self.handle_gpt(message)
 
     @commands.hybrid_command(description="Convert units")
     @app_commands.allowed_installs(guilds=True, users=True)
