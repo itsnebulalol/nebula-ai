@@ -113,7 +113,7 @@ class ShellPlugin(AIPlugin):
             },
             {
                 "role": "user",
-                "content": f"Determine the confidence level for using the AI Linux Shell Container plugin based on this input and the guidelines given to you: '{content}'\n\nRemember, provide only a number between 0.00 and 1.00, representing your confidence level. Do not write any other text. If you cannot do it, provide 0.00 to save time and resources.",
+                "content": f"Determine the confidence level if the AI should use the plugin based on this input and the guidelines given to you: '{content}'\n\nRemember, provide only a number between 0.00 and 1.00, representing your confidence level. Do not write any other text. If you cannot do it, provide 0.00 to save time and resources.",
             },
         ]
 

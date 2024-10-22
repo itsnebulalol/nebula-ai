@@ -99,7 +99,7 @@ class WebPlugin(AIPlugin):
             },
             {
                 "role": "user",
-                "content": f"Generate a search query based on this input: '{content}'\n\nPrevious context (ignore unless absolutely necessary):\n{context_text}\n\nRemember, provide ONLY the search query.",
+                "content": f"Generate a search query based on this input and the previously given guidelines: '{content}'\n\nPrevious context (ignore unless absolutely necessary):\n{context_text}\n\nRemember, provide ONLY the search query.",
             },
         ]
 
