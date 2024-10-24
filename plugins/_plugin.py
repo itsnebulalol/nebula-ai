@@ -24,7 +24,7 @@ class AIPlugin(ABC):
 
     def load_prompts(self) -> dict:
         prompts = {}
-        plugin_file_name = path.splitext(path.basename(self.__class__.__module__))[0]
+        plugin_file_name = str(self.__class__).split(".")[1]
         prompt_dir = f"config/prompts/{plugin_file_name}"
         if path.exists(prompt_dir):
             for filename in listdir(prompt_dir):

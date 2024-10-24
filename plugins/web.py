@@ -36,7 +36,9 @@ class WebPlugin(AIPlugin):
             search_query = await self.get_search_query(content, context)
 
             await self.update_embed(initial_message, "Searching the web...")
-            search_results = await self.search_web(search_query.replace('"', ""))
+            search_results = await self.search_web(
+                search_query.split('"')[1] if '"' in search_query else search_query
+            )
 
             await self.update_embed(
                 initial_message, "AI is typing a response based on web results..."
@@ -111,7 +113,7 @@ class WebPlugin(AIPlugin):
 
         return completion.choices[0].message.content.strip()
 
-    async def search_web(self, query: str, num_results: int = 4) -> str:
+    async def search_web(self, query: str, num_results: int = 3) -> str:
         proxy = choice(self.proxies) if self.proxies else None
         results = await AsyncDDGS(proxy=proxy).atext(
             query, safesearch="on", max_results=num_results, backend="api"
