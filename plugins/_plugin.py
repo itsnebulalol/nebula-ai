@@ -3,11 +3,13 @@ from datetime import datetime
 from os import listdir, path
 
 import discord
+from openai import AsyncOpenAI
 
 
 class AIPlugin(ABC):
     name = "Plugin"
     normal_takeover = False
+    tools = []
 
     def __init__(self):
         self.prompts = self.load_prompts()
@@ -48,6 +50,13 @@ class AIPlugin(ABC):
     ):
         pass
 
+    @abstractmethod
+    async def should_use_plugin(
+        self,
+        message: discord.Message,
+    ):
+        pass
+
     async def send_initial_embed(self, message: discord.Message, description: str):
         embed = discord.Embed(
             description=f"<a:loading:1292980861142040606> {description}",
@@ -63,3 +72,19 @@ class AIPlugin(ABC):
             color=discord.Color.red() if error else discord.Color.blue(),
         )
         await embed_message.edit(embed=embed)
+
+    async def get_tool_response(
+        self, client: AsyncOpenAI, model: str, content: str, context: list = None
+    ):
+        if not self.tools:
+            return None
+
+        messages = [{"role": "user", "content": content}]
+        if context:
+            messages = context + messages
+
+        response = await client.chat.completions.create(
+            model=model, messages=messages, tools=self.tools, tool_choice="auto"
+        )
+
+        return response.choices[0].message

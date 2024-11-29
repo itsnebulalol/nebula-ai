@@ -140,7 +140,9 @@ class AI(commands.Cog, name="ai"):
 
         self.proxies = self.load_proxies()
 
-        self.client = AsyncOpenAI(base_url=self.ai_config["base_url"], api_key="ollama")
+        self.client = AsyncOpenAI(
+            base_url=self.ai_config["base_url"], api_key=self.ai_config["api_key"]
+        )
         self.session = ClientSession()
         if self.proxies == []:
             self.session_proxied = self.session
@@ -165,11 +167,11 @@ class AI(commands.Cog, name="ai"):
 
         self.plugins = [
             ImagesPlugin(self.session),
-            RedditPlugin(
-                self.config["reddit"]["id"], self.config["reddit"]["secret"], "NebulaAI"
-            ),
-            YouTubePlugin(self.session, self.whisper_model),
-            ImageGenPlugin(self.session, self.client, self.ai_config),
+            # RedditPlugin(
+            #    self.config["reddit"]["id"], self.config["reddit"]["secret"], "NebulaAI"
+            # ),
+            # YouTubePlugin(self.session, self.whisper_model),
+            # ImageGenPlugin(self.session, self.client, self.ai_config),
             # ShellPlugin(self.session, self.client, self.ai_config),
             WebPlugin(self.session_proxied, self.client, self.ai_config, self.proxies),
         ]

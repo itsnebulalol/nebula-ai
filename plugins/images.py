@@ -21,13 +21,8 @@ class ImagesPlugin(AIPlugin):
         content: str,
         context: list,
     ):
-        if message.attachments and message.attachments[0].content_type.startswith(
-            "image/"
-        ):
-            await self.update_embed(initial_message, "Processing the image...")
-            resp = await self.session.get(message.attachments[0].url)
-            enc = b64encode(await resp.read()).decode("utf-8")
-
+        should_search, confidence = await self.should_use_plugin(message)
+        if should_search:
             await self.update_embed(
                 initial_message, "AI is typing a response based on the image..."
             )
@@ -38,7 +33,7 @@ class ImagesPlugin(AIPlugin):
                         {"type": "text", "text": content},
                         {
                             "type": "image_url",
-                            "image_url": {"url": f"data:image/png;base64,{enc}"},
+                            "image_url": {"url": f"{message.attachments[0].url}"},
                         },
                     ],
                 },
@@ -46,3 +41,9 @@ class ImagesPlugin(AIPlugin):
 
             return prompt
         return None
+
+    async def should_use_plugin(self, message: discord.Message):
+        if message.attachments:
+            if message.attachments[0].content_type.startswith("image/"):
+                return True, 1.00
+        return False, 0.00

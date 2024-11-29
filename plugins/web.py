@@ -1,3 +1,4 @@
+from json import loads
 from random import choice
 from re import search
 
@@ -12,6 +13,25 @@ from ._plugin import AIPlugin
 
 class WebPlugin(AIPlugin):
     name = "Web Search"
+    tools = [
+        {
+            "type": "function",
+            "function": {
+                "name": "search_web",
+                "description": "Search the web for information",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "The search query to use",
+                        }
+                    },
+                    "required": ["query"],
+                },
+            },
+        }
+    ]
 
     def __init__(self, session: ClientSession, client: AsyncOpenAI, ai_config, proxies):
         self.session = session
@@ -28,35 +48,35 @@ class WebPlugin(AIPlugin):
         content: str,
         context: list,
     ):
-        should_search, confidence = await self.should_search_web(message)
+        should_search, confidence = await self.should_use_plugin(message)
         if should_search:
-            await self.update_embed(
-                initial_message, "Determining the best search query..."
-            )
-            search_query = await self.get_search_query(content, context)
-
             await self.update_embed(initial_message, "Searching the web...")
-            search_results = await self.search_web(
-                search_query.split('"')[1] if '"' in search_query else search_query
-            )
 
-            await self.update_embed(
-                initial_message, "AI is typing a response based on web results..."
+            tool_response = await self.get_tool_response(
+                self.client, self.ai_config["models"]["text"], content, context
             )
-            prompt = [
-                {
-                    "role": "user",
-                    "content": f"User query: {content}\n\nAI given search query: '{search_query}'\n\nRelevant web results:\n{search_results}\n\nPlease provide a response based on this information. Usage of the web information may not be necessary.",
-                },
-            ]
+            if tool_response.tool_calls:
+                call = tool_response.tool_calls[0]
+                print(call)
+                search_results = await self.search_web(
+                    loads(call.function.arguments).get("query")
+                )
 
-            return prompt, confidence
+                prompt = [
+                    {
+                        "role": "user",
+                        "content": f"User query: {content}\n\nRelevant web results:\n{search_results}\n\nPlease provide a response based on this information.",
+                    }
+                ]
+
+                return prompt, confidence
+
         return None
 
-    async def should_search_web(self, message: discord.Message) -> bool:
+    async def should_use_plugin(self, message: discord.Message):
         if message.attachments:
             if message.attachments[0].content_type.startswith("image/"):
-                return False
+                return False, 0.00
 
         text = message.content.lower().strip().lstrip(";")
 
